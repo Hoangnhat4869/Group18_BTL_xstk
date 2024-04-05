@@ -140,18 +140,18 @@ cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 # par(mfrow = c(3, 3))
 
 
-# Process missing data.
-hist(cpu_data$Lithography, main = "Lithography", xlab = "Lithography", col="red", labels=TRUE)
-hist(cpu_data$Recommended_Customer_Price, main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="red", labels=TRUE)
-hist(cpu_data$nb_of_Cores, main = "nb_of_Cores", xlab = "nb_of_Cores", col="red", labels=TRUE)  ## Not missing
-hist(cpu_data$nb_of_Threads, main = "nb_of_Threads", xlab = "nb_of_Threads", col="red", labels=TRUE)
-hist(cpu_data$Processor_Base_Frequency, main = "Processor_Base_Frequency", xlab = "Processor_Base_Frequency", col="red", labels=TRUE)
-hist(cpu_data$Cache_size, main = "Cache_size", xlab = "Cache_size", col="red", labels=TRUE)
-hist(cpu_data$Max_Memory_Size, main = "Max_Memory_Size", xlab = "Max_Memory_Size", col="red", labels=TRUE)
-hist(cpu_data$Max_nb_of_Memory_Channels, main = "Max_nb_of_Memory_Channels", xlab = "Max_nb_of_Memory_Channels", col="red", labels=TRUE)
-hist(cpu_data$Max_Memory_Bandwidth, main = "Max_Memory_Bandwidth", xlab = "Max_Memory_Bandwidth", col="red", labels=TRUE)
+# # Process missing data.
+# hist(cpu_data$Lithography, main = "Lithography", xlab = "Lithography", col="red", labels=TRUE)
+# hist(cpu_data$Recommended_Customer_Price, main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="red", labels=TRUE)
+# hist(cpu_data$nb_of_Cores, main = "nb_of_Cores", xlab = "nb_of_Cores", col="red", labels=TRUE)  ## Not missing
+# hist(cpu_data$nb_of_Threads, main = "nb_of_Threads", xlab = "nb_of_Threads", col="red", labels=TRUE)
+# hist(cpu_data$Processor_Base_Frequency, main = "Processor_Base_Frequency", xlab = "Processor_Base_Frequency", col="red", labels=TRUE)
+# hist(cpu_data$Cache_size, main = "Cache_size", xlab = "Cache_size", col="red", labels=TRUE)
+# hist(cpu_data$Max_Memory_Size, main = "Max_Memory_Size", xlab = "Max_Memory_Size", col="red", labels=TRUE)
+# hist(cpu_data$Max_nb_of_Memory_Channels, main = "Max_nb_of_Memory_Channels", xlab = "Max_nb_of_Memory_Channels", col="red", labels=TRUE)
+# hist(cpu_data$Max_Memory_Bandwidth, main = "Max_Memory_Bandwidth", xlab = "Max_Memory_Bandwidth", col="red", labels=TRUE)
 
-# Numerical Variables, Filling with Mean of its columns, then convert to logarit.
+# Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
 cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- mean(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
 cpu_data$nb_of_Threads <- ifelse(is.na(cpu_data$nb_of_Threads), cpu_data$nb_of_Cores*2, cpu_data$nb_of_Threads)
@@ -240,3 +240,86 @@ colnames(categorical_summary) <- c("Count", "Unique", "Mode", "Frequency")
 rownames(categorical_summary) <- caterows
 View(categorical_summary)
 
+
+
+## Statistic for linear regression
+## Draw graphs
+# Histogram for Recommended_Customer_Price
+ggplot(cpu_data, aes(x = Recommended_Customer_Price)) +
+  geom_histogram(bins = 30, fill = "blue", color = "black") +
+  labs(title = "Histogram of Recommended_Customer_Price",
+       x = "Recommended_Customer_Price", y = "Frequency")
+
+# Draw boxplot for Recommended_Customer_Price vs Vertical_Segment
+ggplot(cpu_data, aes(x = Vertical_Segment, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill=c("green2", "lemonchiffon1", 
+                "yellow1", "indianred1"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Vertical_Segment",
+       x = "Vertical_Segment", y = "Recommended_Customer_Price")
+
+# Draw boxplot for Recommended_Customer_Price vs Cache_type
+ggplot(cpu_data, aes(x = Cache_type, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill = c("darkslategray1", "hotpink1", 
+                "#192a40", "olivedrab2",
+                "salmon1"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Cache_type",
+       x = "Cache_type", y = "Recommended_Customer_Price")
+
+# Draw boxplot for Recommended_Customer_Price vs Embedded_Options_Available
+ggplot(cpu_data, aes(x = Embedded_Options_Available, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill = c("lemonchiffon1", 
+                "yellow1", "indianred1"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Embedded_Options_Available",
+       x = "Embedded_Options_Available", y = "Recommended_Customer_Price")
+
+# Draw boxplot for Recommended_Customer_Price vs Instruction_Set
+ggplot(cpu_data, aes(x = Instruction_Set, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill = c("green2", "lemonchiffon1", 
+                "yellow1", "indianred1"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Instruction_Set",
+       x = "Instruction_Set", y = "Recommended_Customer_Price")
+
+# Draw boxplot for Recommended_Customer_Price vs Idle_States
+ggplot(cpu_data, aes(x = Idle_States, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill = c("lemonchiffon1", 
+                "yellow1", "indianred1"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Idle_States",
+       x = "Idle_States", y = "Recommended_Customer_Price")
+
+# Draw boxplot for Recommended_Customer_Price vs Execute_Disable_Bit
+ggplot(cpu_data, aes(x = Execute_Disable_Bit, y = Recommended_Customer_Price)) +
+  geom_boxplot(fill = c("darkslategray1", "hotpink1", 
+              "olivedrab2"), color = "black") +
+  labs(title = "Boxplot of Recommended_Customer_Price vs Execute_Disable_Bit",
+       x = "Execute_Disable_Bit", y = "Recommended_Customer_Price")
+
+
+## Draw pairplot for numerical data
+par(mfrow = c(3, 3))
+pairs(cpu_data[c("Recommended_Customer_Price", "Lithography")], pch=16,
+  col="red2", main="Pairplot of Recommended_Customer_Price vs Lithography")
+pairs(cpu_data[c("Recommended_Customer_Price", "nb_of_Cores")], pch=16,
+  col="blue2", main="Pairplot of Recommended_Customer_Price vs nb_of_Cores")
+pairs(cpu_data[c("Recommended_Customer_Price", "nb_of_Threads")], pch=16,
+  col="green2", main="Pairplot of Recommended_Customer_Price vs nb_of_Threads")
+pairs(cpu_data[c("Recommended_Customer_Price", "Processor_Base_Frequency")], pch=16,
+  col="yellow2", main="Pairplot of Recommended_Customer_Price vs Processor_Base_Frequency")
+pairs(cpu_data[c("Recommended_Customer_Price", "Cache_size")], pch=16,
+  col="purple2", main="Pairplot of Recommended_Customer_Price vs Cache_size")
+pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Size")], pch=16,
+  col="orange2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Size")
+pairs(cpu_data[c("Recommended_Customer_Price", "Max_nb_of_Memory_Channels")], pch=16,
+  col="pink2", main="Pairplot of Recommended_Customer_Price vs Max_nb_of_Memory_Channels")
+pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
+  col="brown2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Bandwidth")
+
+
+## Linear regression
+# Linear regression for Recommended_Customer_Price
+model <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+              Processor_Base_Frequency + Cache_size + Max_Memory_Size +
+              Max_nb_of_Memory_Channels + Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
+              as.factor(Cache_type) + as.factor(Embedded_Options_Available) +
+              as.factor(Instruction_Set) + as.factor(Idle_States) +
+              as.factor(Execute_Disable_Bit), data = cpu_data)
+summary(model)
