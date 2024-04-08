@@ -31,9 +31,8 @@ cpu_data <- read.csv(".\\Intel_CPUs.csv", header = TRUE,
 
 cpu_data <- cpu_data %>% select("Vertical_Segment", "Lithography",
   "Recommended_Customer_Price", "nb_of_Cores", "nb_of_Threads",
-  "Processor_Base_Frequency", "Cache", "Embedded_Options_Available",
-  "Max_Memory_Size", "Max_nb_of_Memory_Channels", "Max_Memory_Bandwidth",
-  "Instruction_Set", "Idle_States", "Execute_Disable_Bit"
+  "Processor_Base_Frequency", "Cache", "Max_Memory_Size",
+  "Max_Memory_Bandwidth", "Execute_Disable_Bit"
 )
 temp <- cpu_data
 
@@ -127,17 +126,23 @@ cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 # meantemp$Processor_Base_Frequency[is.na(meantemp$Processor_Base_Frequency)] <- mean(meantemp$Processor_Base_Frequency, na.rm = TRUE)
 # meantemp$Cache_size[is.na(meantemp$Cache_size)] <- mean(meantemp$Cache_size, na.rm = TRUE)
 # meantemp$Max_Memory_Size[is.na(meantemp$Max_Memory_Size)] <- mean(meantemp$Max_Memory_Size, na.rm = TRUE)
-# meantemp$Max_nb_of_Memory_Channels[is.na(meantemp$Max_nb_of_Memory_Channels)] <- mean(meantemp$Max_nb_of_Memory_Channels, na.rm = TRUE)
 # meantemp$Max_Memory_Bandwidth[is.na(meantemp$Max_Memory_Bandwidth)] <- mean(meantemp$Max_Memory_Bandwidth, na.rm = TRUE)
+
 # mediantemp$Lithography[is.na(mediantemp$Lithography)] <- median(mediantemp$Lithography, na.rm = TRUE)
 # mediantemp$Recommended_Customer_Price[is.na(mediantemp$Recommended_Customer_Price)] <- median(mediantemp$Recommended_Customer_Price, na.rm = TRUE)
 # mediantemp$nb_of_Threads[is.na(mediantemp$nb_of_Threads)] <- median(mediantemp$nb_of_Threads, na.rm = TRUE)
 # mediantemp$Processor_Base_Frequency[is.na(mediantemp$Processor_Base_Frequency)] <- median(mediantemp$Processor_Base_Frequency, na.rm = TRUE)
 # mediantemp$Cache_size[is.na(mediantemp$Cache_size)] <- median(mediantemp$Cache_size, na.rm = TRUE)
 # mediantemp$Max_Memory_Size[is.na(mediantemp$Max_Memory_Size)] <- median(mediantemp$Max_Memory_Size, na.rm = TRUE)
-# mediantemp$Max_nb_of_Memory_Channels[is.na(mediantemp$Max_nb_of_Memory_Channels)] <- median(mediantemp$Max_nb_of_Memory_Channels, na.rm = TRUE)
 # mediantemp$Max_Memory_Bandwidth[is.na(mediantemp$Max_Memory_Bandwidth)] <- median(mediantemp$Max_Memory_Bandwidth, na.rm = TRUE)
+
+# par(mfrow = c(1, 1))
 # par(mfrow = c(3, 3))
+
+# hist(cpu_data$Lithography, main = "Lithography", xlab = "Lithography", col="red", labels=TRUE)
+# hist(meantemp$Lithography, main = "Mean Lithography", xlab = "Lithography", col="blue", labels=TRUE)
+# hist(mediantemp$Lithography, main = "Median Lithography", xlab = "Lithography", col="green", labels=TRUE)
+# hist(na.locf(cpu_data$Lithography), main = "Last Observation Carried Forward Lithography", xlab = "Lithography", col="yellow", labels=TRUE)
 
 
 # # Process missing data.
@@ -148,18 +153,19 @@ cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 # hist(cpu_data$Processor_Base_Frequency, main = "Processor_Base_Frequency", xlab = "Processor_Base_Frequency", col="red", labels=TRUE)
 # hist(cpu_data$Cache_size, main = "Cache_size", xlab = "Cache_size", col="red", labels=TRUE)
 # hist(cpu_data$Max_Memory_Size, main = "Max_Memory_Size", xlab = "Max_Memory_Size", col="red", labels=TRUE)
-# hist(cpu_data$Max_nb_of_Memory_Channels, main = "Max_nb_of_Memory_Channels", xlab = "Max_nb_of_Memory_Channels", col="red", labels=TRUE)
 # hist(cpu_data$Max_Memory_Bandwidth, main = "Max_Memory_Bandwidth", xlab = "Max_Memory_Bandwidth", col="red", labels=TRUE)
 
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
-cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- mean(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
+cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
 cpu_data$nb_of_Threads <- ifelse(is.na(cpu_data$nb_of_Threads), cpu_data$nb_of_Cores*2, cpu_data$nb_of_Threads)
 cpu_data$Processor_Base_Frequency[is.na(cpu_data$Processor_Base_Frequency)] <- median(cpu_data$Processor_Base_Frequency, na.rm = TRUE)
 cpu_data$Cache_size[is.na(cpu_data$Cache_size)] <- median(cpu_data$Cache_size, na.rm = TRUE)
 cpu_data$Max_Memory_Size[is.na(cpu_data$Max_Memory_Size)] <- median(cpu_data$Max_Memory_Size, na.rm = TRUE)
-cpu_data$Max_nb_of_Memory_Channels[is.na(cpu_data$Max_nb_of_Memory_Channels)] <- median(cpu_data$Max_nb_of_Memory_Channels, na.rm = TRUE)
 cpu_data$Max_Memory_Bandwidth[is.na(cpu_data$Max_Memory_Bandwidth)] <- median(cpu_data$Max_Memory_Bandwidth, na.rm = TRUE)
+
+par(mfrow = c(1, 1))
+hist(cpu_data$Recommended_Customer_Price, main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="blue2", labels=TRUE)
 
 # Convert to logarit.
 cpu_data$Lithography <- log(cpu_data$Lithography)
@@ -169,19 +175,12 @@ cpu_data$nb_of_Threads <- log(cpu_data$nb_of_Threads)
 cpu_data$Processor_Base_Frequency <- log(cpu_data$Processor_Base_Frequency)
 cpu_data$Cache_size <- log(cpu_data$Cache_size)
 cpu_data$Max_Memory_Size <- log(cpu_data$Max_Memory_Size)
-cpu_data$Max_nb_of_Memory_Channels <- log(cpu_data$Max_nb_of_Memory_Channels)
 cpu_data$Max_Memory_Bandwidth <- log(cpu_data$Max_Memory_Bandwidth)
 
 # Categorical Variables, Filling with "Missing".
 table(cpu_data$Vertical_Segment)
 cpu_data$Cache_type[is.na(cpu_data$Cache_type)] = "Missing"
 table(cpu_data$Cache_type)
-cpu_data$Embedded_Options_Available[is.na(cpu_data$Embedded_Options_Available)] = "Missing"
-table(cpu_data$Embedded_Options_Available)
-cpu_data$Instruction_Set[is.na(cpu_data$Instruction_Set)] = "Missing"
-table(cpu_data$Instruction_Set)
-cpu_data$Idle_States[is.na(cpu_data$Idle_States)] = "Missing"
-table(cpu_data$Idle_States)
 cpu_data$Execute_Disable_Bit[is.na(cpu_data$Execute_Disable_Bit)] = "Missing"
 table(cpu_data$Execute_Disable_Bit)
 
@@ -204,8 +203,7 @@ remove("Processor_Base_Frequency_cleaning")
 ## Statistics the numerical data
 numerows <- c("Lithography", "Recommended_Customer_Price", "nb_of_Cores",
               "nb_of_Threads", "Processor_Base_Frequency", "Cache_size",
-              "Max_Memory_Size", "Max_nb_of_Memory_Channels",
-              "Max_Memory_Bandwidth")
+              "Max_Memory_Size", "Max_Memory_Bandwidth")
 
 mean_ = apply(cpu_data[numerows], 2, mean, na.rm = TRUE)
 sd_ = apply(cpu_data[numerows], 2, sd, na.rm = TRUE)
@@ -224,8 +222,11 @@ View(numerical_summary)
 
 
 ## Categorical data
-caterows <- c("Vertical_Segment", "Cache_type", "Embedded_Options_Available",
-              "Instruction_Set", "Idle_States", "Execute_Disable_Bit")
+View(as.data.frame(table(cpu_data$Vertical_Segment, dnn="Vertical_Segment")))
+View(as.data.frame(table(cpu_data$Cache_type, dnn="Cache_type")))
+View(as.data.frame(table(cpu_data$Execute_Disable_Bit, dnn="Execute_Disable_Bit")))
+
+caterows <- c("Vertical_Segment", "Cache_type", "Execute_Disable_Bit")
 categorical_summary <- as.data.frame(matrix(ncol=4))
 for (i in caterows) {
   count <- length(cpu_data[[i]])
@@ -265,27 +266,6 @@ ggplot(cpu_data, aes(x = Cache_type, y = Recommended_Customer_Price)) +
   labs(title = "Boxplot of Recommended_Customer_Price vs Cache_type",
        x = "Cache_type", y = "Recommended_Customer_Price")
 
-# Draw boxplot for Recommended_Customer_Price vs Embedded_Options_Available
-ggplot(cpu_data, aes(x = Embedded_Options_Available, y = Recommended_Customer_Price)) +
-  geom_boxplot(fill = c("lemonchiffon1", 
-                "yellow1", "indianred1"), color = "black") +
-  labs(title = "Boxplot of Recommended_Customer_Price vs Embedded_Options_Available",
-       x = "Embedded_Options_Available", y = "Recommended_Customer_Price")
-
-# Draw boxplot for Recommended_Customer_Price vs Instruction_Set
-ggplot(cpu_data, aes(x = Instruction_Set, y = Recommended_Customer_Price)) +
-  geom_boxplot(fill = c("green2", "lemonchiffon1", 
-                "yellow1", "indianred1"), color = "black") +
-  labs(title = "Boxplot of Recommended_Customer_Price vs Instruction_Set",
-       x = "Instruction_Set", y = "Recommended_Customer_Price")
-
-# Draw boxplot for Recommended_Customer_Price vs Idle_States
-ggplot(cpu_data, aes(x = Idle_States, y = Recommended_Customer_Price)) +
-  geom_boxplot(fill = c("lemonchiffon1", 
-                "yellow1", "indianred1"), color = "black") +
-  labs(title = "Boxplot of Recommended_Customer_Price vs Idle_States",
-       x = "Idle_States", y = "Recommended_Customer_Price")
-
 # Draw boxplot for Recommended_Customer_Price vs Execute_Disable_Bit
 ggplot(cpu_data, aes(x = Execute_Disable_Bit, y = Recommended_Customer_Price)) +
   geom_boxplot(fill = c("darkslategray1", "hotpink1", 
@@ -295,7 +275,6 @@ ggplot(cpu_data, aes(x = Execute_Disable_Bit, y = Recommended_Customer_Price)) +
 
 
 ## Draw pairplot for numerical data
-par(mfrow = c(3, 3))
 pairs(cpu_data[c("Recommended_Customer_Price", "Lithography")], pch=16,
   col="red2", main="Pairplot of Recommended_Customer_Price vs Lithography")
 pairs(cpu_data[c("Recommended_Customer_Price", "nb_of_Cores")], pch=16,
@@ -308,8 +287,6 @@ pairs(cpu_data[c("Recommended_Customer_Price", "Cache_size")], pch=16,
   col="purple2", main="Pairplot of Recommended_Customer_Price vs Cache_size")
 pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Size")], pch=16,
   col="orange2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Size")
-pairs(cpu_data[c("Recommended_Customer_Price", "Max_nb_of_Memory_Channels")], pch=16,
-  col="pink2", main="Pairplot of Recommended_Customer_Price vs Max_nb_of_Memory_Channels")
 pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
   col="brown2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Bandwidth")
 
@@ -318,8 +295,7 @@ pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
 # Linear regression for Recommended_Customer_Price
 model <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
               Processor_Base_Frequency + Cache_size + Max_Memory_Size +
-              Max_nb_of_Memory_Channels + Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
-              as.factor(Cache_type) + as.factor(Embedded_Options_Available) +
-              as.factor(Instruction_Set) + as.factor(Idle_States) +
+              Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
+              as.factor(Cache_type) + 
               as.factor(Execute_Disable_Bit), data = cpu_data)
 summary(model)
