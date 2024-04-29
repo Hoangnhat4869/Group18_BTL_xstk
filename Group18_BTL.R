@@ -25,7 +25,7 @@ library("car")
 library("zoo")
 
 ## Reading the dataset
-cpu_data <- read.csv(".\\Intel_CPUs.csv", header = TRUE,
+cpu_data <- read.csv("Dataset\\Intel_CPUs.csv", header = TRUE,
                      stringsAsFactors = FALSE, na.strings = c("", "N/A"))
 # View(cpu_data)
 
@@ -295,25 +295,45 @@ pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
 
 
 ## Linear regression
+# Split dataset into train_set and test_set
+set.seed(12345) # Ensure that generated number are all the same
+train_size <- floor(0.8 * nrow(cpu_data)) # Take floor of 80% of data size
+train_index <- sample(seq_len(nrow(cpu_data)), size = train_size) # Generate a vector of observation
+train_set <- cpu_data[train_index, ]
+test_set <- cpu_data[-train_index, ]
+
 # Linear regression for Recommended_Customer_Price
 model1 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
               Processor_Base_Frequency + Cache_size + Max_Memory_Size +
               Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
               as.factor(Cache_type) + 
-              as.factor(Execute_Disable_Bit), data = cpu_data)
+              as.factor(Execute_Disable_Bit), data = train_set)
 summary(model1)
+
 # Statistical tests
 # H0: beta_i = 0, H1: beta_i != 0.
-# Removing Execute_Disable_Bit with p_value = 0.239797 > 0.5, can't reject H0.
+# Removing Execute_Disable_Bit with p_value > 0.5, can't reject H0.
 model2 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
                Processor_Base_Frequency + Cache_size + Max_Memory_Size +
                Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
-               as.factor(Cache_type), data = cpu_data)
+               as.factor(Cache_type), data = train_set)
 summary(model2)
+
 # Using ANOVA for hypothesis test, NESTED MODEL
 # H0: beta_i of removed variables in model1 = 0, H1:  atleast 1 of beta_i of removed variables in model1 != 0
 anova(model2, model1)
 
-# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also both Adjusted R-squared of 2 model are no different.
-# So we can choose second model with no different that removed any insignificant variable
-main_model <- model2
+# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model2 are slightly better.
+# So we can choose second model to go on with no different that removed any insignificant variable
+
+# Removing Max_Memory_Bandwidth with p_value > 0.5, can't reject H0.
+model3 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+               Processor_Base_Frequency + Cache_size + Max_Memory_Size + 
+               as.factor(Vertical_Segment) +
+               as.factor(Cache_type), data = train_set)
+summary(model3)
+
+anova(model3, model2)
+# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
+# So we can keep on with model3 because all p_value < 0.05
+main_model <- model3
