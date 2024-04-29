@@ -315,5 +315,5 @@ summary(model2)
 anova(model2, model1)
 
 # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also both Adjusted R-squared of 2 model are no different.
-# So we keep our first model
-main_model <- model1
+# So we can choose second model with no different that removed any insignificant variable
+main_model <- model2
