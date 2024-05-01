@@ -337,3 +337,8 @@ anova(model3, model2)
 # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
 # So we can keep on with model3 because all p_value < 0.05
 main_model <- model3
+
+# Check if we fulfill all the assumptions.
+# Because this is a multiple predictor variables model -> Analyzing the residual.
+# If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
+plot(main_model)
