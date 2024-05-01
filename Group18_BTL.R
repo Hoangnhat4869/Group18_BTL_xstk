@@ -25,26 +25,26 @@ library("car")
 library("zoo")
 
 ## Reading the dataset
-cpu_data <- read.csv(".\\Intel_CPUs.csv", header = TRUE,
+cpu_data <- read.csv("Dataset\\Intel_CPUs.csv", header = TRUE,
                      stringsAsFactors = FALSE, na.strings = c("", "N/A"))
 # View(cpu_data)
 
 cpu_data <- cpu_data %>% select("Vertical_Segment", "Lithography",
-  "Recommended_Customer_Price", "nb_of_Cores", "nb_of_Threads",
-  "Processor_Base_Frequency", "Cache", "Max_Memory_Size",
-  "Max_Memory_Bandwidth", "Execute_Disable_Bit"
+                                "Recommended_Customer_Price", "nb_of_Cores", "nb_of_Threads",
+                                "Processor_Base_Frequency", "Cache", "Max_Memory_Size",
+                                "Max_Memory_Bandwidth", "Execute_Disable_Bit"
 )
 temp <- cpu_data
 
 ## Plot data pattern
 aggr_plot <- aggr(cpu_data, col = c("navyblue", "red"),
-  numbers = TRUE,
-  sortVars = TRUE,
-  labels = names(cpu_data),
-  cex.axis = .7,
-  gap = 3,
-  ylab = c("Histogram of Missing data", "Pattern"),
-  cex.numbers = 0.1
+                  numbers = TRUE,
+                  sortVars = TRUE,
+                  labels = names(cpu_data),
+                  cex.axis = .7,
+                  gap = 3,
+                  ylab = c("Histogram of Missing data", "Pattern"),
+                  cex.numbers = 0.1
 )
 
 ## Convert any string data that need to be in integer type.
@@ -157,7 +157,7 @@ cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
-cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
+# cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
 cpu_data$nb_of_Threads <- ifelse(is.na(cpu_data$nb_of_Threads), cpu_data$nb_of_Cores*2, cpu_data$nb_of_Threads)
 cpu_data$Processor_Base_Frequency[is.na(cpu_data$Processor_Base_Frequency)] <- median(cpu_data$Processor_Base_Frequency, na.rm = TRUE)
 cpu_data$Cache_size[is.na(cpu_data$Cache_size)] <- median(cpu_data$Cache_size, na.rm = TRUE)
@@ -177,6 +177,7 @@ cpu_data$Cache_size <- log(cpu_data$Cache_size)
 cpu_data$Max_Memory_Size <- log(cpu_data$Max_Memory_Size)
 cpu_data$Max_Memory_Bandwidth <- log(cpu_data$Max_Memory_Bandwidth)
 
+
 # Categorical Variables, Filling with "Missing".
 table(cpu_data$Vertical_Segment)
 cpu_data$Cache_type[is.na(cpu_data$Cache_type)] = "Missing"
@@ -184,6 +185,8 @@ table(cpu_data$Cache_type)
 cpu_data$Execute_Disable_Bit[is.na(cpu_data$Execute_Disable_Bit)] = "Missing"
 table(cpu_data$Execute_Disable_Bit)
 
+# Removing any missed data observation of Recommended_Customer_Price
+cpu_data <- na.omit(cpu_data)
 
 # Print out the number of NA
 print(apply(is.na(temp), 2, sum))
@@ -254,48 +257,88 @@ ggplot(cpu_data, aes(x = Recommended_Customer_Price)) +
 # Draw boxplot for Recommended_Customer_Price vs Vertical_Segment
 ggplot(cpu_data, aes(x = Vertical_Segment, y = Recommended_Customer_Price)) +
   geom_boxplot(fill=c("green2", "lemonchiffon1", 
-                "yellow1", "indianred1"), color = "black") +
+                      "yellow1", "indianred1"), color = "black") +
   labs(title = "Boxplot of Recommended_Customer_Price vs Vertical_Segment",
        x = "Vertical_Segment", y = "Recommended_Customer_Price")
 
 # Draw boxplot for Recommended_Customer_Price vs Cache_type
 ggplot(cpu_data, aes(x = Cache_type, y = Recommended_Customer_Price)) +
   geom_boxplot(fill = c("darkslategray1", "hotpink1", 
-                "#192a40", "olivedrab2",
-                "salmon1"), color = "black") +
+                        "#192a40", "olivedrab2",
+                        "salmon1"), color = "black") +
   labs(title = "Boxplot of Recommended_Customer_Price vs Cache_type",
        x = "Cache_type", y = "Recommended_Customer_Price")
 
 # Draw boxplot for Recommended_Customer_Price vs Execute_Disable_Bit
 ggplot(cpu_data, aes(x = Execute_Disable_Bit, y = Recommended_Customer_Price)) +
   geom_boxplot(fill = c("darkslategray1", "hotpink1", 
-              "olivedrab2"), color = "black") +
+                        "olivedrab2"), color = "black") +
   labs(title = "Boxplot of Recommended_Customer_Price vs Execute_Disable_Bit",
        x = "Execute_Disable_Bit", y = "Recommended_Customer_Price")
 
 
 ## Draw pairplot for numerical data
 pairs(cpu_data[c("Recommended_Customer_Price", "Lithography")], pch=16,
-  col="red2", main="Pairplot of Recommended_Customer_Price vs Lithography")
+      col="red2", main="Pairplot of Recommended_Customer_Price vs Lithography")
 pairs(cpu_data[c("Recommended_Customer_Price", "nb_of_Cores")], pch=16,
-  col="blue2", main="Pairplot of Recommended_Customer_Price vs nb_of_Cores")
+      col="blue2", main="Pairplot of Recommended_Customer_Price vs nb_of_Cores")
 pairs(cpu_data[c("Recommended_Customer_Price", "nb_of_Threads")], pch=16,
-  col="green2", main="Pairplot of Recommended_Customer_Price vs nb_of_Threads")
+      col="green2", main="Pairplot of Recommended_Customer_Price vs nb_of_Threads")
 pairs(cpu_data[c("Recommended_Customer_Price", "Processor_Base_Frequency")], pch=16,
-  col="yellow2", main="Pairplot of Recommended_Customer_Price vs Processor_Base_Frequency")
+      col="yellow2", main="Pairplot of Recommended_Customer_Price vs Processor_Base_Frequency")
 pairs(cpu_data[c("Recommended_Customer_Price", "Cache_size")], pch=16,
-  col="purple2", main="Pairplot of Recommended_Customer_Price vs Cache_size")
+      col="purple2", main="Pairplot of Recommended_Customer_Price vs Cache_size")
 pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Size")], pch=16,
-  col="orange2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Size")
+      col="orange2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Size")
 pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
-  col="brown2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Bandwidth")
+      col="brown2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Bandwidth")
 
 
 ## Linear regression
+# Split dataset into train_set and test_set
+set.seed(12345) # Ensure that generated number are all the same
+train_size <- floor(0.8 * nrow(cpu_data)) # Take floor of 80% of data size
+train_index <- sample(seq_len(nrow(cpu_data)), size = train_size) # Generate a vector of observation
+train_set <- cpu_data[train_index, ]
+test_set <- cpu_data[-train_index, ]
+
 # Linear regression for Recommended_Customer_Price
-model <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+model1 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
               Processor_Base_Frequency + Cache_size + Max_Memory_Size +
               Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
               as.factor(Cache_type) + 
-              as.factor(Execute_Disable_Bit), data = cpu_data)
-summary(model)
+              as.factor(Execute_Disable_Bit), data = train_set)
+summary(model1)
+
+# Statistical tests
+# H0: beta_i = 0, H1: beta_i != 0.
+# Removing Execute_Disable_Bit with p_value > 0.5, can't reject H0.
+model2 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+               Processor_Base_Frequency + Cache_size + Max_Memory_Size +
+               Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
+               as.factor(Cache_type), data = train_set)
+summary(model2)
+
+# Using ANOVA for hypothesis test, NESTED MODEL
+# H0: beta_i of removed variables in model1 = 0, H1:  atleast 1 of beta_i of removed variables in model1 != 0
+anova(model2, model1)
+
+# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model2 are slightly better.
+# So we can choose second model to go on with no different that removed any insignificant variable
+
+# Removing Max_Memory_Bandwidth with p_value > 0.5, can't reject H0.
+model3 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+               Processor_Base_Frequency + Cache_size + Max_Memory_Size + 
+               as.factor(Vertical_Segment) +
+               as.factor(Cache_type), data = train_set)
+summary(model3)
+
+anova(model3, model2)
+# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
+# So we can keep on with model3 because all p_value < 0.05
+main_model <- model3
+
+# Check if we fulfill all the assumptions.
+# Because this is a multiple predictor variables model -> Analyzing the residual.
+# If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
+plot(main_model)
