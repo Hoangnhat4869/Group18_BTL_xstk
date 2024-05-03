@@ -350,5 +350,10 @@ predict_data <- cbind(test_set$Recommended_Customer_Price)
 colnames(predict_data)[1] <- "Recommended_Customer_Price"
 test_set <- select(test_set, -Recommended_Customer_Price) # Remove the price on the test_set.
 
-# Adding fitted value and it confidence interval
-predict_data <- cbind(predict_data, predict(main_model, newdata = test_set, interval = "confidence", level = 0.99))
+predict_data <- cbind(predict_data, predict(main_model, newdata = test_set, interval = "prediction", level = 0.95))
+predict_data <- data.frame(predict_data)
+
+# Calculate the accuracy
+correct_prediction <- predict_data %>% filter(Recommended_Customer_Price >= lwr & Recommended_Customer_Price <= upr)
+
+accuracy = nrow(correct_prediction) / nrow(predict_data)
