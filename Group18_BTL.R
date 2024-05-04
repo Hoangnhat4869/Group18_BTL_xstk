@@ -299,6 +299,7 @@ pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
 set.seed(12345) # Ensure that generated number are all the same
 train_size <- floor(0.8 * nrow(cpu_data)) # Take floor of 80% of data size
 train_index <- sample(seq_len(nrow(cpu_data)), size = train_size) # Generate a vector of observation
+train_index
 train_set <- cpu_data[train_index, ]
 test_set <- cpu_data[-train_index, ]
 
@@ -342,3 +343,17 @@ main_model <- model3
 # Because this is a multiple predictor variables model -> Analyzing the residual.
 # If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
 plot(main_model)
+
+# Prediction
+# Split the real price to another dataframe
+predict_data <- cbind(test_set$Recommended_Customer_Price)
+colnames(predict_data)[1] <- "Recommended_Customer_Price"
+test_set <- select(test_set, -Recommended_Customer_Price) # Remove the price on the test_set.
+
+predict_data <- cbind(predict_data, predict(main_model, newdata = test_set, interval = "prediction", level = 0.95))
+predict_data <- data.frame(predict_data)
+
+# Calculate the accuracy
+correct_prediction <- predict_data %>% filter(Recommended_Customer_Price >= lwr & Recommended_Customer_Price <= upr)
+
+accuracy = nrow(correct_prediction) / nrow(predict_data)
