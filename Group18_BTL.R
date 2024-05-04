@@ -155,6 +155,9 @@ cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 # hist(cpu_data$Max_Memory_Size, main = "Max_Memory_Size", xlab = "Max_Memory_Size", col="red", labels=TRUE)
 # hist(cpu_data$Max_Memory_Bandwidth, main = "Max_Memory_Bandwidth", xlab = "Max_Memory_Bandwidth", col="red", labels=TRUE)
 
+## Remove any missing data in Recommended_Customer_Price
+cpu_data <- cpu_data[!is.na(cpu_data$Recommended_Customer_Price), ]
+print(apply(is.na(cpu_data), 2, sum))
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
 # cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
@@ -186,7 +189,7 @@ cpu_data$Execute_Disable_Bit[is.na(cpu_data$Execute_Disable_Bit)] = "Missing"
 table(cpu_data$Execute_Disable_Bit)
 
 # Removing any missed data observation of Recommended_Customer_Price
-cpu_data <- na.omit(cpu_data)
+# cpu_data <- na.omit(cpu_data)
 
 # Print out the number of NA
 print(apply(is.na(temp), 2, sum))
@@ -324,24 +327,28 @@ summary(model2)
 # H0: beta_i of removed variables in model1 = 0, H1:  atleast 1 of beta_i of removed variables in model1 != 0
 anova(model2, model1)
 
-# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model2 are slightly better.
-# So we can choose second model to go on with no different that removed any insignificant variable
+# # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model2 are slightly better.
+# # So we can choose second model to go on with no different that removed any insignificant variable
 
-# Removing Max_Memory_Bandwidth with p_value > 0.5, can't reject H0.
-model3 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
-               Processor_Base_Frequency + Cache_size + Max_Memory_Size + 
-               as.factor(Vertical_Segment) +
-               as.factor(Cache_type), data = train_set)
-summary(model3)
+# # Removing Max_Memory_Bandwidth with p_value > 0.5, can't reject H0.
+# model3 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
+#                Processor_Base_Frequency + Cache_size + Max_Memory_Size + 
+#                as.factor(Vertical_Segment) +
+#                as.factor(Cache_type), data = train_set)
+# summary(model3)
 
-anova(model3, model2)
-# Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
-# So we can keep on with model3 because all p_value < 0.05
-main_model <- model3
+# anova(model3, model2)
+# # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
+# # So we can keep on with model3 because all p_value < 0.05
+# main_model <- model3
+
+main_model <- model2
 
 # Check if we fulfill all the assumptions.
 # Because this is a multiple predictor variables model -> Analyzing the residual.
 # If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
+
+par(mfrow = c(2, 2))
 plot(main_model)
 
 # Prediction
@@ -350,10 +357,11 @@ predict_data <- cbind(test_set$Recommended_Customer_Price)
 colnames(predict_data)[1] <- "Recommended_Customer_Price"
 test_set <- select(test_set, -Recommended_Customer_Price) # Remove the price on the test_set.
 
-predict_data <- cbind(predict_data, predict(main_model, newdata = test_set, interval = "prediction", level = 0.95))
+predict_data <- cbind(predict_data, predict(main_model, newdata = test_set, interval = "prediction", level = 0.9))
 predict_data <- data.frame(predict_data)
-
+View(predict_data)
 # Calculate the accuracy
 correct_prediction <- predict_data %>% filter(Recommended_Customer_Price >= lwr & Recommended_Customer_Price <= upr)
 
 accuracy = nrow(correct_prediction) / nrow(predict_data)
+print(accuracy)
