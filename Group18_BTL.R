@@ -118,46 +118,10 @@ Cache_size_cleaning <- function(string) { # Cleaning function
 }
 cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 
-# meantemp <- cpu_data
-# mediantemp <- cpu_data
-# meantemp$Lithography[is.na(meantemp$Lithography)] <- mean(meantemp$Lithography, na.rm = TRUE)
-# meantemp$Recommended_Customer_Price[is.na(meantemp$Recommended_Customer_Price)] <- mean(meantemp$Recommended_Customer_Price, na.rm = TRUE)
-# meantemp$nb_of_Threads[is.na(meantemp$nb_of_Threads)] <- mean(meantemp$nb_of_Threads, na.rm = TRUE)
-# meantemp$Processor_Base_Frequency[is.na(meantemp$Processor_Base_Frequency)] <- mean(meantemp$Processor_Base_Frequency, na.rm = TRUE)
-# meantemp$Cache_size[is.na(meantemp$Cache_size)] <- mean(meantemp$Cache_size, na.rm = TRUE)
-# meantemp$Max_Memory_Size[is.na(meantemp$Max_Memory_Size)] <- mean(meantemp$Max_Memory_Size, na.rm = TRUE)
-# meantemp$Max_Memory_Bandwidth[is.na(meantemp$Max_Memory_Bandwidth)] <- mean(meantemp$Max_Memory_Bandwidth, na.rm = TRUE)
-
-# mediantemp$Lithography[is.na(mediantemp$Lithography)] <- median(mediantemp$Lithography, na.rm = TRUE)
-# mediantemp$Recommended_Customer_Price[is.na(mediantemp$Recommended_Customer_Price)] <- median(mediantemp$Recommended_Customer_Price, na.rm = TRUE)
-# mediantemp$nb_of_Threads[is.na(mediantemp$nb_of_Threads)] <- median(mediantemp$nb_of_Threads, na.rm = TRUE)
-# mediantemp$Processor_Base_Frequency[is.na(mediantemp$Processor_Base_Frequency)] <- median(mediantemp$Processor_Base_Frequency, na.rm = TRUE)
-# mediantemp$Cache_size[is.na(mediantemp$Cache_size)] <- median(mediantemp$Cache_size, na.rm = TRUE)
-# mediantemp$Max_Memory_Size[is.na(mediantemp$Max_Memory_Size)] <- median(mediantemp$Max_Memory_Size, na.rm = TRUE)
-# mediantemp$Max_Memory_Bandwidth[is.na(mediantemp$Max_Memory_Bandwidth)] <- median(mediantemp$Max_Memory_Bandwidth, na.rm = TRUE)
-
-# par(mfrow = c(1, 1))
-# par(mfrow = c(3, 3))
-
-# hist(cpu_data$Lithography, main = "Lithography", xlab = "Lithography", col="red", labels=TRUE)
-# hist(meantemp$Lithography, main = "Mean Lithography", xlab = "Lithography", col="blue", labels=TRUE)
-# hist(mediantemp$Lithography, main = "Median Lithography", xlab = "Lithography", col="green", labels=TRUE)
-# hist(na.locf(cpu_data$Lithography), main = "Last Observation Carried Forward Lithography", xlab = "Lithography", col="yellow", labels=TRUE)
-
-
-# # Process missing data.
-# hist(cpu_data$Lithography, main = "Lithography", xlab = "Lithography", col="red", labels=TRUE)
-# hist(cpu_data$Recommended_Customer_Price, main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="red", labels=TRUE)
-# hist(cpu_data$nb_of_Cores, main = "nb_of_Cores", xlab = "nb_of_Cores", col="red", labels=TRUE)  ## Not missing
-# hist(cpu_data$nb_of_Threads, main = "nb_of_Threads", xlab = "nb_of_Threads", col="red", labels=TRUE)
-# hist(cpu_data$Processor_Base_Frequency, main = "Processor_Base_Frequency", xlab = "Processor_Base_Frequency", col="red", labels=TRUE)
-# hist(cpu_data$Cache_size, main = "Cache_size", xlab = "Cache_size", col="red", labels=TRUE)
-# hist(cpu_data$Max_Memory_Size, main = "Max_Memory_Size", xlab = "Max_Memory_Size", col="red", labels=TRUE)
-# hist(cpu_data$Max_Memory_Bandwidth, main = "Max_Memory_Bandwidth", xlab = "Max_Memory_Bandwidth", col="red", labels=TRUE)
-
 ## Remove any missing data in Recommended_Customer_Price
 cpu_data <- cpu_data[!is.na(cpu_data$Recommended_Customer_Price), ]
 print(apply(is.na(cpu_data), 2, sum))
+
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
 # cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
@@ -225,7 +189,6 @@ numerical_summary <- as.data.frame(numerical_summary)
 View(numerical_summary)
 
 # View(as.data.frame(cor(cpu_data[numerows])))
-
 
 ## Categorical data
 View(as.data.frame(table(cpu_data$Vertical_Segment, dnn="Vertical_Segment")))
@@ -308,10 +271,10 @@ test_set <- cpu_data[-train_index, ]
 
 # Linear regression for Recommended_Customer_Price
 model1 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
-              Processor_Base_Frequency + Cache_size + Max_Memory_Size +
-              Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
-              as.factor(Cache_type) + 
-              as.factor(Execute_Disable_Bit), data = train_set)
+               Processor_Base_Frequency + Cache_size + Max_Memory_Size +
+               Max_Memory_Bandwidth + as.factor(Vertical_Segment) +
+               as.factor(Cache_type) + 
+               as.factor(Execute_Disable_Bit), data = train_set)
 summary(model1)
 
 # Statistical tests
@@ -328,26 +291,12 @@ summary(model2)
 anova(model2, model1)
 
 # # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model2 are slightly better.
-# # So we can choose second model to go on with no different that removed any insignificant variable
-
-# # Removing Max_Memory_Bandwidth with p_value > 0.5, can't reject H0.
-# model3 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
-#                Processor_Base_Frequency + Cache_size + Max_Memory_Size + 
-#                as.factor(Vertical_Segment) +
-#                as.factor(Cache_type), data = train_set)
-# summary(model3)
-
-# anova(model3, model2)
-# # Because we can't reject H0: beta_i of removed variables in model1 = 0, mean that both model perform the same, also Adjusted R-squared of model3 are slightly lower.
-# # So we can keep on with model3 because all p_value < 0.05
-# main_model <- model3
-
+# # So we can choose second model to go on with no different that removed any insignificant variable.
 main_model <- model2
 
 # Check if we fulfill all the assumptions.
 # Because this is a multiple predictor variables model -> Analyzing the residual.
 # If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
-
 par(mfrow = c(2, 2))
 plot(main_model)
 
