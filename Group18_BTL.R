@@ -25,7 +25,7 @@ library("car")
 library("zoo")
 
 ## Reading the dataset
-cpu_data <- read.csv("Dataset/Intel_CPUs.csv", header = TRUE,
+cpu_data <- read.csv("Dataset\\Intel_CPUs.csv", header = TRUE,
                      stringsAsFactors = FALSE, na.strings = c("", "N/A"))
 # View(cpu_data)
 
