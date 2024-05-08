@@ -307,11 +307,14 @@ ggplot(main_model, aes(x = main_model$residuals)) +
                 args = list(mean = mean(main_model$residuals), 
                             sd = sd(main_model$residuals)),
                 col = "red",
-                size = 1.5)
+                linewidth = 1.5)
 
 # Other plot
 par(mfrow = c(2, 2))
 plot(main_model)
+
+# Check if residuals are independent.
+durbinWatsonTest(main_model)
 
 ## Prediction
 # Split the real price to another dataframe
