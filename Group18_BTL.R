@@ -330,3 +330,10 @@ correct_prediction <- predict_data %>% filter(Recommended_Customer_Price >= lwr 
 
 accuracy = nrow(correct_prediction) / nrow(predict_data)
 print(accuracy)
+
+par(mfrow = c(1, 1))
+plot(predict_data$Recommended_Customer_Price, predict_data$fit)
+
+# Calculate the RMSE
+Reg_rmse = sqrt(mean((predict_data$Recommended_Customer_Price - predict_data$fit)^2))
+Reg_rmse
