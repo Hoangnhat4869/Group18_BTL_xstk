@@ -260,7 +260,7 @@ pairs(cpu_data[c("Recommended_Customer_Price", "Max_Memory_Bandwidth")], pch=16,
       col="brown2", main="Pairplot of Recommended_Customer_Price vs Max_Memory_Bandwidth")
 
 
-## Linear regression
+### Linear regression
 # Split dataset into train_set and test_set
 set.seed(12345) # Ensure that generated number are all the same
 train_size <- floor(0.8 * nrow(cpu_data)) # Take floor of 80% of data size
@@ -294,13 +294,29 @@ anova(model2, model1)
 # # So we can choose second model to go on with no different that removed any insignificant variable.
 main_model <- model2
 
-# Check if we fulfill all the assumptions.
+## Check if we fulfill all the assumptions.
 # Because this is a multiple predictor variables model -> Analyzing the residual.
 # If this was a simple linear regression model, we can check the assumption by analyzing the graph with a predictor on x-axis and an outcome on y-axis easily.
+
+# Plot Histogram of residuals
+ggplot(main_model, aes(x = main_model$residuals)) +
+  geom_density(fill="#69b3a2", color="#e9ecef", alpha=0.8) +
+  labs(title = "Histogram of Residuals",
+       x = "Residuals", y = "Density") +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(main_model$residuals), 
+                            sd = sd(main_model$residuals)),
+                col = "red",
+                linewidth = 1.5)
+
+# Other plot
 par(mfrow = c(2, 2))
 plot(main_model)
 
-# Prediction
+# Check if residuals are independent.
+durbinWatsonTest(main_model)
+
+## Prediction
 # Split the real price to another dataframe
 predict_data <- cbind(test_set$Recommended_Customer_Price)
 colnames(predict_data)[1] <- "Recommended_Customer_Price"
@@ -314,3 +330,10 @@ correct_prediction <- predict_data %>% filter(Recommended_Customer_Price >= lwr 
 
 accuracy = nrow(correct_prediction) / nrow(predict_data)
 print(accuracy)
+
+par(mfrow = c(1, 1))
+plot(predict_data$Recommended_Customer_Price, predict_data$fit)
+
+# Calculate the RMSE
+Reg_rmse = sqrt(mean((predict_data$Recommended_Customer_Price - predict_data$fit)^2))
+Reg_rmse
