@@ -46,6 +46,12 @@ aggr_plot <- aggr(cpu_data, col = c("navyblue", "red"),
                   cex.numbers = 0.1
 )
 
+## Remove any missing data in Recommended_Customer_Price
+cpu_data <- cpu_data[!is.na(cpu_data$Recommended_Customer_Price), ]
+print(apply(is.na(cpu_data), 2, sum))
+
+print(length((cpu_data$Recommended_Customer_Price)))
+
 ## Convert any string data that need to be in integer type.
 
 # Recommended_Customer_Price converting.
@@ -102,7 +108,7 @@ cpu_data <- cpu_data %>%
 # Cache converting, split into 2 columns represent cache_size, cache_type.
 cpu_data <- cpu_data %>%
   mutate(Cache = sub(" ", "", Cache)) %>% # Remove the first space character.
-  # Find the first " " character, merge everything from there to the end, then separate into 2 columns
+# Find the first " " character, merge everything from there to the end, then separate into 2 columns
   separate(Cache, sep = " ", into = c("Cache_size", "Cache_type"),
            remove = TRUE, extra = "merge", fill = "right")
 
@@ -117,9 +123,6 @@ Cache_size_cleaning <- function(string) { # Cleaning function
 }
 cpu_data$Cache_size <- sapply(cpu_data$Cache_size, Cache_size_cleaning)
 
-## Remove any missing data in Recommended_Customer_Price
-cpu_data <- cpu_data[!is.na(cpu_data$Recommended_Customer_Price), ]
-print(apply(is.na(cpu_data), 2, sum))
 
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
@@ -269,6 +272,8 @@ train_index <- sample(seq_len(nrow(cpu_data)), size = train_size) # Generate a v
 train_index
 train_set <- cpu_data[train_index, ]
 test_set <- cpu_data[-train_index, ]
+View(train_set)
+View(test_set)
 
 # Linear regression for Recommended_Customer_Price
 model1 <- lm(formula = Recommended_Customer_Price ~ Lithography + nb_of_Cores + nb_of_Threads +
