@@ -35,7 +35,6 @@ temp <- df2
 
 
 ## Convert any string data that need to be in integer type.
-
 # Recommended_Customer_Price converting.
 recommend_price_cleaning <- function(price_range) {
   if (grepl("-", price_range)) {
@@ -56,41 +55,41 @@ df2 <- df2 %>%
   mutate(Lithography = gsub("nm|\\s", "", Lithography),
          Lithography = as.double(Lithography))
 
-## xóa dữ liệu khuyết, Vertical_Segment ko khuyết
+## Remove missing data
 df2 <- df2[!is.na(df2$Recommended_Customer_Price), ]
 df2 <- df2[!is.na(df2$Lithography), ]
 
-#đếm số dữ liệu khuyết r in ra
-#print(apply(is.na(df2), 2, sum))
+# Print the count of NA values in each column
+print(apply(is.na(df2), 2, sum))
 
 #đếm số giá trị của Lithography và số lần xuất hiện
-#print(df2 %>% select(Lithography) %>% table())
-#print(df2 %>% select(Lithography) %>% table() %>% length())
+print(df2 %>% select(Lithography) %>% table())
+print(df2 %>% select(Lithography) %>% table() %>% length())
 
 #đếm số giá trị của Vertical_Segment và số lần xuất hiện
-#print(df2 %>% select(Vertical_Segment) %>% table())
-#print(df2 %>% select(Vertical_Segment) %>% table() %>% length())
+print(df2 %>% select(Vertical_Segment) %>% table())
+print(df2 %>% select(Vertical_Segment) %>% table() %>% length())
 
 
 #vẽ biểu đồ Q-Q plot cho Vertical_Segment để xét có tuân theo phân phối chuẩn
-#png("qqVer.png")
-#qqVer <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
-  #geom_qq() +
-  #facet_wrap(~ Vertical_Segment, scales = "free") +
-  #theme_minimal()
-#qqVer <- qqVer + stat_qq_line(color = "red")
-#print(qqVer)
-#dev.off()
+# png("qqVer.png")
+# qqVer <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
+#   geom_qq() +
+#   facet_wrap(~ Vertical_Segment, scales = "free") +
+#   theme_minimal()
+# qqVer <- qqVer + stat_qq_line(color = "red")
+# print(qqVer)
+# dev.off()
 
-#vẽ biểu đồ Q-Q plot cho Lithography để xét có tuân theo phân phối chuẩn
-#png("qqLi.png")
-#qqLi <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
-  #geom_qq() +
-  #facet_wrap(~ Lithography, scales = "free") +
-  #theme_minimal()
-#qqLi <- qqLi + stat_qq_line(color = "red")
-#print(qqLi)
-#dev.off()
+# #vẽ biểu đồ Q-Q plot cho Lithography để xét có tuân theo phân phối chuẩn
+# png("qqLi.png")
+# qqLi <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
+#   geom_qq() +
+#   facet_wrap(~ Lithography, scales = "free") +
+#   theme_minimal()
+# qqLi <- qqLi + stat_qq_line(color = "red")
+# print(qqLi)
+# dev.off()
 
 df2$Vertical_Segment <- as.factor(df2$Vertical_Segment)
 df2$Lithography <- as.factor(df2$Lithography)
@@ -105,17 +104,17 @@ df2_log <- df2
 df2_log$Recommend_Customer_Price_Log <- log(df2_log$Recommended_Customer_Price)
 
 #thực hiện shapiro test (sau khi log)
-#res.aov2 <- aov(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
-#aov_residuals2 <- residuals(object = res.aov2)
-#print(shapiro.test(x = aov_residuals2))
+res.aov2 <- aov(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
+aov_residuals2 <- residuals(object = res.aov2)
+print(shapiro.test(x = aov_residuals2))
 
 #Levene test cho biến độc lập định tính để đánh giá tính đồng nhất phương sai
-#leve_result <- leveneTest(Recommend_Customer_Price_Log ~ Vertical_Segment, data = df2_log)
-#print(leve_result)
+leve_result <- leveneTest(Recommend_Customer_Price_Log ~ Vertical_Segment, data = df2_log)
+print(leve_result)
 
 #Bartlett test cho biến độc lập định lượng để đánh giá tính đồng nhất phương sai
-#bartlett_result <- bartlett.test(Recommend_Customer_Price_Log ~ Lithography, data = df2_log)
-#print(bartlett_result)
+bartlett_result <- bartlett.test(Recommend_Customer_Price_Log ~ Lithography, data = df2_log)
+print(bartlett_result)
 
 #kiểm tra outlier bằng phương pháp khoảng cách Cooks
 #png("outlier.png")
@@ -129,3 +128,17 @@ df2_log$Recommend_Customer_Price_Log <- log(df2_log$Recommended_Customer_Price)
 #influential <- cooksd > 4 * mean(cooksd, na.rm = TRUE)
 #outliers <- df2[influential, ]
 #dev.off()
+
+
+# av_res <- rstandard(aov(df2_l og$Recommend_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography))
+# shapiro.test(av_res)
+
+# #qqlot
+# qqnorm(av_res)
+# qqline(av_res)
+
+# #hist
+# hist(av_res)
+
+# av2 <- aov(df2_log$Recommend_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography)
+# summary(av2)
