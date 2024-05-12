@@ -27,7 +27,6 @@ library("zoo")
 ## Reading the dataset
 cpu_data <- read.csv("Dataset\\Intel_CPUs.csv", header = TRUE,
                      stringsAsFactors = FALSE, na.strings = c("", "N/A"))
-# View(cpu_data)
 
 cpu_data <- cpu_data %>% select("Vertical_Segment", "Lithography",
                                 "Recommended_Customer_Price", "nb_of_Cores", "nb_of_Threads",
@@ -124,12 +123,14 @@ print(apply(is.na(cpu_data), 2, sum))
 
 # Numerical Variables filling
 cpu_data$Lithography <- na.locf(cpu_data$Lithography)
-# cpu_data$Recommended_Customer_Price[is.na(cpu_data$Recommended_Customer_Price)] <- median(cpu_data$Recommended_Customer_Price, na.rm = TRUE)
 cpu_data$nb_of_Threads <- ifelse(is.na(cpu_data$nb_of_Threads), cpu_data$nb_of_Cores*2, cpu_data$nb_of_Threads)
 cpu_data$Processor_Base_Frequency[is.na(cpu_data$Processor_Base_Frequency)] <- median(cpu_data$Processor_Base_Frequency, na.rm = TRUE)
 cpu_data$Cache_size[is.na(cpu_data$Cache_size)] <- median(cpu_data$Cache_size, na.rm = TRUE)
 cpu_data$Max_Memory_Size[is.na(cpu_data$Max_Memory_Size)] <- median(cpu_data$Max_Memory_Size, na.rm = TRUE)
 cpu_data$Max_Memory_Bandwidth[is.na(cpu_data$Max_Memory_Bandwidth)] <- median(cpu_data$Max_Memory_Bandwidth, na.rm = TRUE)
+
+# Store data to csv file
+write.csv(cpu_data, "Dataset\\Intel_CPUs_cleaned.csv", row.names = FALSE)
 
 par(mfrow = c(1, 1))
 hist(cpu_data$Recommended_Customer_Price, main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="blue2", labels=TRUE)
