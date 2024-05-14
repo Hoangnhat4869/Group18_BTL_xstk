@@ -647,7 +647,7 @@ print(leve_result)
 #dev.off()
 
 
-# av_res <- rstandard(aov(df2_l og$Recommended_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography))
+# av_res <- rstandard(aov(df2_log$Recommended_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography))
 # shapiro.test(av_res)
 
 # #qqlot
