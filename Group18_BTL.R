@@ -591,27 +591,6 @@ print(df2 %>% select(Lithography) %>% table() %>% length())
 print(df2 %>% select(Vertical_Segment) %>% table())
 print(df2 %>% select(Vertical_Segment) %>% table() %>% length())
 
-
-#vẽ biểu đồ Q-Q plot cho Vertical_Segment để xét có tuân theo phân phối chuẩn
-# png("qqVer.png")
-# qqVer <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
-#   geom_qq() +
-#   facet_wrap(~ Vertical_Segment, scales = "free") +
-#   theme_minimal()
-# qqVer <- qqVer + stat_qq_line(color = "red")
-# print(qqVer)
-# dev.off()
-
-# #vẽ biểu đồ Q-Q plot cho Lithography để xét có tuân theo phân phối chuẩn
-# png("qqLi.png")
-# qqLi <- ggplot(df2, aes(sample = Recommended_Customer_Price)) +
-#   geom_qq() +
-#   facet_wrap(~ Lithography, scales = "free") +
-#   theme_minimal()
-# qqLi <- qqLi + stat_qq_line(color = "red")
-# print(qqLi)
-# dev.off()
-
 df2$Vertical_Segment <- as.factor(df2$Vertical_Segment)
 df2$Lithography <- as.factor(df2$Lithography)
 
