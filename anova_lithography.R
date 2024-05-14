@@ -1,6 +1,6 @@
 df <- data.frame(
    Lithography=cpu_data$Lithography,
-   Recommend_Customer_Price=cpu_data$Recommended_Customer_Price
+   Recommend_Customer_Price=cpu_data$Recommended_Customer_Price,
 )
 
 hist(log(df$Recommend_Customer_Price), main = "Recommended_Customer_Price", xlab = "Recommended_Customer_Price", col="blue2", labels=TRUE)
@@ -28,6 +28,44 @@ df %>% select(Lithography) %>% table() %>% length()
 
 #-----
 # Check the normal distribution of RCP
+
+df$Lithography <- as.factor(df$Lithography)
+library(ggpubr)
+png("images/normal_distribution_for_each_group.png")
+ggqqplot(df, "Recommend_Customer_Price", facet.by = "Lithography")
+dev.off()
+
+
+df %>% group_by(Lithography) %>% shapiro_test(Recommend_Customer_Price)
+# # A tibble: 7 × 4
+#   Lithography variable                 statistic        p
+#   <fct>       <chr>                        <dbl>    <dbl>
+# 1 14          Recommend_Customer_Price     0.581 3.91e-30
+# 2 22          Recommend_Customer_Price     0.534 1.02e-33
+# 3 32          Recommend_Customer_Price     0.711 7.23e-19
+# 4 45          Recommend_Customer_Price     0.648 7.66e-17
+# 5 65          Recommend_Customer_Price     0.750 2.12e- 5
+# 6 90          Recommend_Customer_Price     0.908 1.25e- 1
+# 7 130         Recommend_Customer_Price     0.886 1.52e- 1
+
+df_log <- df
+df_log$Recommend_Customer_Price <- log(df_log$Recommend_Customer_Price)
+df_log %>% group_by(Lithography) %>% shapiro_test(Recommend_Customer_Price)
+
+png("images/normal_distribution_for_each_group_after_log.png")
+ggqqplot(df_log, "Recommend_Customer_Price", facet.by = "Lithography")
+dev.off()
+
+library(rstatix)
+df %>% group_by(Lithography) %>% select(Recommend_Customer_Price) %>% head()
+
+# Build the linear model
+model  <- lm(Recommend_Customer_Price ~ Lithography, data = df_log)
+# Create a QQ plot of residuals
+ggqqplot(residuals(model))
+shapiro_test(residuals(model))
+
+
 Recommend_Customer_Price   <- df$Recommend_Customer_Price
 Lithography                <- as.factor(df$Lithography) #group
 
@@ -226,3 +264,26 @@ print(LSD.test(av, "Lithography"))
 
 # The portion of the output that we’re most interested in is the section titled $groups. 
 # The types of lithinium that have different characters in the groups column are significantly different.
+
+
+
+
+#-----------------------------------
+
+
+df2 <- data.frame(
+   Recommend_Customer_Price=cpu_data$Recommended_Customer_Price,
+   Vertical_Segment=cpu_data$Vertical_Segment
+)
+
+df2$Vertical_Segment <- as.factor(df2$Vertical_Segment)
+levels(df2$Vertical_Segment)
+
+df2 %>% select(Vertical_Segment) %>% is.na() %>% sum
+ggqqplot(df2, "Recommend_Customer_Price", facet.by = "Vertical_Segment")
+
+df2 %>% group_by(Vertical_Segment) %>% shapiro_test(Recommend_Customer_Price)
+
+
+df2_log <- df2
+df2_log$Recommend_Customer_Price
