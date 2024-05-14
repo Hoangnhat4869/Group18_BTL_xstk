@@ -74,6 +74,7 @@ cpu_data <- cpu_data %>%
   mutate(Lithography = gsub("nm|\\s", "", Lithography),
          Lithography = as.double(Lithography))
 
+df2 <- cpu_data
 # Processor_Base_Frequency converting (GHZ & MHZ) to MHZ.
 Processor_Base_Frequency_cleaning <- function(string) { # Cleaning function
   if (!is.na(string)) {
@@ -621,20 +622,20 @@ df2$Lithography <- as.factor(df2$Lithography)
 
 #Thử sử dụng Log Transformation để đưa dữ liệu về phân phối chuẩn
 df2_log <- df2
-df2_log$Recommend_Customer_Price_Log <- log(df2_log$Recommended_Customer_Price)
+df2_log$Recommended_Customer_Price_Log <- log(df2_log$Recommended_Customer_Price)
 
 #thực hiện shapiro test (sau khi log)
-res.aov2 <- aov(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
+res.aov2 <- aov(Recommended_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
 aov_residuals2 <- residuals(object = res.aov2)
 print(shapiro.test(x = aov_residuals2))
 
 #Levene test để đánh giá tính đồng nhất phương sai
-leve_result <- leveneTest(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
+leve_result <- leveneTest(Recommended_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
 print(leve_result)
 
 #kiểm tra outlier bằng phương pháp khoảng cách Cooks
 #png("outlier.png")
-#mod <- lm(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
+#mod <- lm(Recommended_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
 #cooksd <- cooks.distance(mod)
 #plot(cooksd, pch = "*", cex = 2, main = "Influential Obs by Cooks distance")
 #abline(h = 4*mean(cooksd, na.rm = TRUE), col = "red")
@@ -646,7 +647,7 @@ print(leve_result)
 #dev.off()
 
 
-# av_res <- rstandard(aov(df2_l og$Recommend_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography))
+# av_res <- rstandard(aov(df2_l og$Recommended_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography))
 # shapiro.test(av_res)
 
 # #qqlot
@@ -656,5 +657,5 @@ print(leve_result)
 # #hist
 # hist(av_res)
 
-# av2 <- aov(df2_log$Recommend_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography)
+# av2 <- aov(df2_log$Recommended_Customer_Price_Log~df2$Vertical_Segment*df2$Lithography)
 # summary(av2)
