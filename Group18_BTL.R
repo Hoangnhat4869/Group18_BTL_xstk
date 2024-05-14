@@ -628,13 +628,9 @@ res.aov2 <- aov(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, d
 aov_residuals2 <- residuals(object = res.aov2)
 print(shapiro.test(x = aov_residuals2))
 
-#Levene test cho biến độc lập định tính để đánh giá tính đồng nhất phương sai
-leve_result <- leveneTest(Recommend_Customer_Price_Log ~ Vertical_Segment, data = df2_log)
+#Levene test để đánh giá tính đồng nhất phương sai
+leve_result <- leveneTest(Recommend_Customer_Price_Log ~ Vertical_Segment * Lithography, data = df2_log)
 print(leve_result)
-
-#Bartlett test cho biến độc lập định lượng để đánh giá tính đồng nhất phương sai
-bartlett_result <- bartlett.test(Recommend_Customer_Price_Log ~ Lithography, data = df2_log)
-print(bartlett_result)
 
 #kiểm tra outlier bằng phương pháp khoảng cách Cooks
 #png("outlier.png")
