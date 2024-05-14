@@ -3,7 +3,7 @@
 ## Checking for packages installation
 my_packages <- c("tidyverse", "mice", "VIM", "readr",
                  "dplyr", "stringr", "ggplot2",
-                 "psych", "knitr", "nortest", "car", "zoo")
+                 "psych", "knitr", "nortest", "car", "zoo", "agricolae")
 missing_packages <- my_packages[!(my_packages %in%
                                     installed.packages()[, "Package"])]
 if (length(missing_packages)) install.packages(missing_packages)
