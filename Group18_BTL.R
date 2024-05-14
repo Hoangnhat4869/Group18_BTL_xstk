@@ -578,6 +578,48 @@ print(LSD.test(av, "Lithography"))
 # The types of lithinium that have different characters in the groups column are significantly different.
 
 
+#########################################################################################
+############################### ANOVA 1 NHÂN TỐ Với Lithography  ########################
+#########################################################################################
+
+cpu_data_clean <- read.csv("Dataset/Intel_CPUs_cleaned.csv", header = TRUE,
+                     stringsAsFactors = FALSE, na.strings = c("", "N/A"))
+
+df_1 <- data.frame(
+   Recommend_Customer_Price=cpu_data_clean$Recommended_Customer_Price,
+   Lithography=cpu_data_clean$Lithography
+)
+
+
+df_1$Lithography <- as.factor(df_1$Lithography)
+df_1 %>% select(Lithography) %>% table()
+
+ggqqplot(df_1, "Recommend_Customer_Price", facet.by = "Lithography")
+
+df_1 %>% group_by(Lithography) %>% shapiro_test(Recommend_Customer_Price)
+
+df_1_log <- df_1
+df_1_log$Recommend_Customer_Price <- log(df_1_log$Recommend_Customer_Price)
+
+ggqqplot(df_1_log, "Recommend_Customer_Price", facet.by = "Lithography")
+
+df_1_log %>% group_by(Lithography) %>% shapiro_test(Recommend_Customer_Price)
+
+# Using Levene Tesst
+leveneTest(Recommend_Customer_Price_Log ~ Lithography)
+
+Recommend_Customer_Price_Log <- df_1_log$Recommend_Customer_Price # nolint: object_name_linter, line_length_linter.
+Lithography <- df_1_log$Lithography # nolint: object_name_linter.
+
+boxplot(Recommend_Customer_Price_Log ~ Lithography, col="blue")
+
+av <- aov(Recommend_Customer_Price_Log ~ Lithography)
+summary(av)
+
+tk <- TukeyHSD(av)
+tk
+
+plot(tk)
 
 #########################################################################################
 ############################### ANOVA 2 NHÂN TỐ  ########################################
